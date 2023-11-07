@@ -1,0 +1,31 @@
+# Python temporary files
+__pycache__
+*.py[cod]
+
+# pip/stuptools/twine files
+*.egg-info
+build
+dist
+
+# Rope (Python code refactoring tool)
+.clirope
+
+# VIM files
+*.sw*
+*.vim
+*.obsession*
+
+# PyClewin Output files
+/*.cif
+/*.pdf
+/*.svg
+module_browser
+
+# human-generated backup files
+*.bak
+*.old
+
+# Misc files
+*.log
+
+

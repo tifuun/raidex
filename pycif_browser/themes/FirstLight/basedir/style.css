@@ -136,8 +136,9 @@ body {
 	text-align: center;
 }
 
-.compo-preview {
+.compo-left svg, .compo-preview {
 	max-width: 100px;
+	max-height: 200px;
 }
 
 .compo-name {

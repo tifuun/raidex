@@ -186,7 +186,9 @@ class Browser(object):
             #        )
             #    for method_name, method in compo.get_custom_methods().items()
             #    ],
-            preview_image=self._generate_inline_preview_image(instance),
+
+            #preview_image=self._generate_inline_preview_image(instance),
+            preview_image='',
             )
 
     def _generate_context(self):
@@ -248,7 +250,7 @@ class Browser(object):
 
     def generate_html(self, path: Path):
         self._copy_basedir(path)
-        #self._generate_preview_images(path)
+        self._generate_preview_images(path)
 
         context = self._generate_context()
         theme = FirstLight

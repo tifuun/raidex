@@ -1,147 +1,240 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>PyClewinSDC Component Browser</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="browser.css">
+		<script src="browser.js"></script>
 	</head>
 	<body>
-		<div id="compos-wrapper">
+		<div class="center">
+			<div id="heading" class="panel convex">
+				<h1>pycif Package Browser</h1>
+				<p>
+					Use the bar below to search through all publically available
+					pycif components.
+					You can filter by package name and/or tag.
+				</p>
+				<p>
+					Please note, pycif packages, just like all python packages,
+					can run arbitrary code on your computer.
+				</p>
+			</div>
+			<div id="searchbar" class="panel convex">
+				<input
+						type="text"
+						class="panel concave input"
+						id="search-box"
+						placeholder="Search"
+						oninput="liveSearch(this.value, '.right', 'search-hide-keyword');"
+						></input>
+
+				<select
+						id="search-package"
+						class="panel concave input"
+						oninput="liveSearch(this.value, '.package-name', 'search-hide-package');"
+						>
+					<option value="">Package</option>
+					<option disabled>---</option>
+					{% for package in all_packages %}
+						<option>{{package}}</option>
+					{% endfor %}
+				</select>
+
+				<select
+						id="search-tags"
+						class="panel concave input"
+						oninput="liveSearch(this.value, '.tags', 'search-hide-tags');"
+						>
+					<option value="">Tag</option>
+					<option disabled>---</option>
+					{% for tag in all_tags %}
+						<option>{{tag}}</option>
+					{% endfor %}
+				</select>
+			</div>
+
 			<div id="compos">
-			{% for compo in components %}
-				<div class="compo-wrapper">
-					<div class="compo" id="compo-{{compo.name}}">
-						<input id="compo-checkbox-{{compo.name}}" type=checkbox class="compo-checkbox"/>
-
-						<div class="compo-body">
-							<div class="compo-left">
-								<!--{{compo.preview_image}}-->
-								<img
-										src='components/{{compo.name}}/preview.svg'
-										class='compo-preview'
-										alt='{{compo.fancy_name}}'>
-							</div>
-							<div class="compo-right">
-								<span class="compo-name"> {{compo.fancy_name}}</span>
-								<p class="compo-desc">
-								{{compo.description}}
-								</p>
-							</div>
-						</div>
-
-						<div class="compo-footer">
-
-							<div class="compo-lists-wrapper">
-								<div class="compo-lists">
-
-									<div class="compo-layers">
-										{{compo.layers | length}}
-										Layer{{'' if compo.layers | length == 1 else 's'}}
-										<ul>
-											{% for layer in compo.layers %}
-												<li>
+				{% for compo in components %}
+					<div class="compo-wrap">
+						<!--
+							compo-wrap keeps the place of the component tile
+							in the flexbox while the tile pops out, so that
+							the following elements in the flexbox don't
+							get chucked around
+						-->
+						<div class="compo panel convex" id="compo-{{compo.name}}" onclick="toggleExpanded(this);">
+							<div class="left panel concave">
+								<div class="layerstack">
+									<div class="layer-first"></div>
+									{% for layer in compo.layers %}
+										<div class="layer">
+											<div class="layer-inner">
+												<div class="layer-image-wrap">
+													<!--
+													<img
+															src='components/{{compo.name}}/layer_{{layer.index}}.svg'
+															class='layer-image'
+															alt='{{compo.fancy_name}}'>
+													-->
+													{{layer.image_string}}
+												</div>
+												<div class="layer-caption">
 													{{layer.name}}
-												</li>
-											{% endfor %}
-										</ul>
-									</div>
-
-									<div class="compo-interfaces">
-										{{compo.interfaces | length}}
-										Interface{{'' if compo.interfaces | length == 1 else 's'}}
-										<ul>
-											{% for interface in compo.interfaces %}
-												<li>
-													<a href="#compo-{{interface.name}}">
-														{{interface.name}}
-													</a>
-												</li>
-											{% endfor %}
-										</ul>
-									</div>
-
-									<div class="compo-marks">
-										{{compo.marks | length}}
-										Mark{{'' if compo.marks | length == 1 else 's'}}
-										<ul>
-											{% for mark in compo.marks %}
-												<li>
-													{{mark.name}}
-												</li>
-											{% endfor %}
-										</ul>
-									</div>
-
-									<div class="compo-methods">
-										{{compo.methods | length}}
-										Custom Method{{'' if compo.methods | length == 1 else 's'}}
-										<ul>
-											{% for method in compo.methods %}
-												<li>
-													<details>
-														<summary>
-															<b>{{method.name}}</b>:
-															{{method.short_description}}
-														</summary>
-														<p>
-															{{method.long_description}}
-														</p>
-													</details>
-												</li>
-											{% endfor %}
-										</ul>
-									</div>
-
-									<div class="compo-options">
-										{{compo.options | length}}
-										Option{{'' if compo.options | length == 1 else 's'}}
-										<ul>
-											{% for opt in compo.options %}
-												<li class="compo-option {{'shadow' if opt.shadow else ''}}">
-													{{opt.name}} = {{opt.default_value}}
-													<i>{{opt.description}}</i>
-												</li>
-											{% endfor %}
-										</ul>
-									</div>
-
-
-								</div>
-								<br>
-							</div>
-
-							<div class="compo-codeblocks">
-								<div class="compo-codeblock">
-									<div class="compo-codelabel">Install: </div>
-									<div class="compo-codetext">$ pip install somerepo</div>
-								</div>
-								<div class="compo-codeblock">
-									<div class="compo-codelabel">Add to project: </div>
-									<div class="compo-codetext">from {{compo.module_name}} import {{compo.name}}</div>
-								</div>
-								<div class="compo-codeblock">
-									<div class="compo-codelabel">Author: </div>
-									<div class="compo-codetext">{{compo.author}}</div>
+												</div>
+											</div>
+										</div>
+									{% endfor %}
 								</div>
 							</div>
-							<div class="compo-footer-pad"></div>
+							<div class="right">
+
+								<!-- header streches the collapsed tile to fit the title -->
+								<div class="header textpanel convex">
+									<h4>
+										<span class="package-name">{{compo.package_name}} </span>
+										<span class="compo-name">{{compo.fancy_name}} </span>
+									</h4>
+								</div>
+
+								<div class="tags">
+									{% for tag in compo.tags %}
+										<div class="tag textpanel convex">{{tag}}</div>
+									{% endfor %}
+								</div>
+
+								<div class="description panel concave">
+									<p>
+										{{compo.description}}
+									</p>
+								</div>
+							</div>
 						</div>
 					</div>
-
-					<div class="compo-checkbox-label-jail">
-						<label for="compo-checkbox-{{compo.name}}" class="compo-checkbox-label">
-							<img
-									src='img/expand.svg'
-									class='compo-expand'
-									alt='Expand button'>
-						</label>
-					</div>
-				</div>
-				<br>
-
 				{% endfor %}
+
 			</div>
 		</div>
+
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+
+		<!--<div class="grid">
+			<div class="tile fruit">
+				<h2 class="name">Banana</h2>
+				<p>Bananas are fruits.</p>
+			</div>
+			<div class="tile pet">
+				<h2 class="name">Dog</h2>
+				<p>A dog is an animal.</p>
+			</div>
+			<div class="tile fruit pet special">
+				<h2 class="name">Cherry cat</h2>
+				<p>Cherry cats are special!</p>
+			</div>
+			<div class="tile fruit">
+				<h2 class="name">Apple</h2>
+				<p>Apples are fruits.</p>
+			</div>
+		</div>-->
 	</body>
+	<!--<script src='browser.js'></script>-->
 </html>
+

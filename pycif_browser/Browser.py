@@ -3,7 +3,7 @@ Module browser.
 
 makes it easy to look through existing modules
 """
-from typing import Type, List
+from typing import List
 from importlib.resources import read_text
 from importlib.resources import files as package_files
 from importlib.resources import as_file as traversable_as_file
@@ -17,10 +17,20 @@ from io import StringIO
 import jinja2
 
 from pycif.draw.Component import Component
-from pycif.exporters.svg import export as svgexport
 
 from pycif_browser.themes import FirstLight
 from pycif.helpers.docparse import split_docstring
+
+from pycif_browser.exporter import export_compo_as_inline
+from pycif_browser.contexts import (
+    CTXBrowser,
+    CTXOption,
+    CTXLayer,
+    CTXInterface,
+    CTXMark,
+    CTXMethod,
+    CTXComponent
+    )
 
 @dataclass
 class ComponentEntry(object):
@@ -32,79 +42,14 @@ class ComponentEntry(object):
         default_factory=lambda: [],
         )
 
-
-@dataclass
-class CTXOption(object):
-    """
-    jinja2 context for a componenent option.
-    """
-
-    name: str
-    default_value: str
-    description: str
-    shadow: bool
-
-
-@dataclass
-class CTXLayer(object):
-    """
-    jinja2 context for a componenent layer.
-    """
-
-    name: str
-
-
-@dataclass
-class CTXInterface(object):
-    """
-    jinja2 context for a component interface.
-    """
-
-    name: str
-
-
-@dataclass
-class CTXMark(object):
-    """
-    jinja2 context for a mark.
-    """
-
-    name: str
-
-
-@dataclass
-class CTXMethod(object):
-    """
-    jinja2 context for a method.
-    """
-
-    name: str
-    short_description: str
-    long_description: str
-
-
-@dataclass
-class CTXComponent(object):
-    """
-    jinja2 context for a component.
-    """
-
-    name: str
-    fancy_name: str
-    module_name: str
-    author: str
-    description: str
-    options: List[CTXOption]
-    layers: List[CTXLayer]
-    interfaces: List[CTXInterface]
-    marks: List[CTXMark]
-    methods: List[CTXMethod]
-    preview_image: str
-
+    layer_image_strings: List[str] = field(
+        default_factory=lambda: [],
+        )
 
 class Browser(object):
     def __init__(self):
         self.components = {}
+        self.ctx_browser = CTXBrowser()
 
     def register_component(self, new_compo):
         """
@@ -137,17 +82,22 @@ class Browser(object):
         module = inspect.getmodule(compo)
         instance = compo()
 
+        package_name = module.__name__.split('.')[0]
         compo_docstring = split_docstring(compo.__doc__)
+        tags = getattr(instance, 'browser_tags', [])
 
-        return CTXComponent(
+        self.ctx_browser.all_tags.update(tags)
+        self.ctx_browser.all_packages.add(package_name)
+
+        self.ctx_browser.components.append(CTXComponent(
             name=compo.__name__,
             fancy_name=compo_docstring.heading,
             module_name=module.__name__,
+            package_name=package_name,
             #author=sys.modules[module.__package__].__author__,
             author='John Doe',
             description=compo_docstring.description,
             options=[],
-            layers=[],
             interfaces=[],
             marks=[],
             methods=[],
@@ -160,12 +110,21 @@ class Browser(object):
             #        )
             #    for name, optspec in compo.optspecs.items()
             #    ],
-            #layers=[
-            #    CTXLayer(
-            #        name=layerspec.fancy_name or name,
-            #        )
-            #    for name, layerspec in compo.layerspecs.items()
-            #    ],
+            layers=[
+                CTXLayer(
+                    index=i,
+                    name=name,
+                    image_string=image_string,
+                    )
+                for i, (name, image_string)
+                in enumerate(
+                    zip(
+                        list(instance.layers),
+                        entry.layer_image_strings,
+                        strict=True,
+                        )
+                    )
+                ],  # TODO
             #interfaces=[
             #    CTXInterface(
             #        name=interface.__name__,
@@ -186,21 +145,23 @@ class Browser(object):
             #        )
             #    for method_name, method in compo.get_custom_methods().items()
             #    ],
-
             #preview_image=self._generate_inline_preview_image(instance),
-            preview_image='',
-            )
+            tags=tags,
+            ))
 
     def _generate_context(self):
         """
         Generate jinja2 context from database
         """
-        return {
-            'components': [
-                self._generate_component_context(compo)
-                for compo in self.components.keys()
-                ],
-            }
+        for compo in self.components.keys():
+            self._generate_component_context(compo)
+        return self.ctx_browser.__dict__
+        #return {
+        #    'components': [
+        #        self._generate_component_context(compo)
+        #        for compo in self.components.keys()
+        #        ],
+        #    }
 
     def _copy_basedir(self, path: Path):
         """
@@ -221,12 +182,16 @@ class Browser(object):
         """
         instance = compo()
 
-        compo_path = path / 'components' / compo.__name__
-        compo_path.mkdir()
-        svg_path = compo_path / 'preview.svg'
 
-        with svg_path.open('w') as svgfile:
-            svgexport(svgfile, instance)
+        compo_path = path / 'components' / compo.__name__
+        compo_path.mkdir(parents=True)
+
+        layer_image_strings = export_compo_as_inline(instance)
+        return layer_image_strings
+        #svg_path = compo_path / 'preview.svg'
+
+        #with svg_path.open('w') as svgfile:
+        #    svgexport(svgfile, instance)
 
     def _generate_inline_preview_image(self, instance):
         """
@@ -245,8 +210,10 @@ class Browser(object):
         Generate preview images for all components in database
         """
         (path / 'components').mkdir()
-        for compo in self.components.keys():
-            self._generate_preview_image(path, compo)
+        for compo, entry in self.components.items():
+            layer_image_strings = self._generate_preview_image(path, compo)
+            entry.layer_image_strings = layer_image_strings
+
 
     def generate_html(self, path: Path):
         self._copy_basedir(path)
@@ -254,7 +221,10 @@ class Browser(object):
 
         context = self._generate_context()
         theme = FirstLight
-        env = jinja2.Environment(autoescape=False)
+        env = jinja2.Environment(
+            autoescape=False,
+            undefined=jinja2.StrictUndefined,
+            )
         template = env.from_string(read_text(theme, 'index.html'))
         (path / 'index.html').write_text(template.render(context))
 

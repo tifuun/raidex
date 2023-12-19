@@ -3,14 +3,12 @@ Module browser.
 
 makes it easy to look through existing modules
 """
-from typing import List
+from typing import List, Dict
 from importlib.resources import read_text
 from importlib.resources import files as package_files
-from importlib.resources import as_file as traversable_as_file
 import inspect
 from pathlib import Path
 from dataclasses import dataclass, field
-import sys
 import shutil
 from io import StringIO
 
@@ -42,8 +40,8 @@ class ComponentEntry(object):
         default_factory=lambda: [],
         )
 
-    layer_image_strings: List[str] = field(
-        default_factory=lambda: [],
+    layer_image_strings: Dict[str, str] = field(
+        default_factory=lambda: {}
         )
 
 class Browser(object):
@@ -119,7 +117,7 @@ class Browser(object):
                 for i, (name, image_string)
                 in enumerate(
                     zip(
-                        list(instance.layers),
+                        instance.layers,
                         entry.layer_image_strings,
                         strict=True,
                         )
@@ -148,6 +146,8 @@ class Browser(object):
             #preview_image=self._generate_inline_preview_image(instance),
             tags=tags,
             ))
+
+        print(instance.layers)
 
     def _generate_context(self):
         """

@@ -11,7 +11,7 @@ import numpy as np
 
 import pycif as pc
 
-def _export_layer(stream, subpolys, bbox, norm_height = 90 ):
+def _export_layer(stream, subpolys, bbox, norm_height=90):
 
     scale_factor = norm_height / bbox.height
 
@@ -112,33 +112,39 @@ def _export_layer(stream, subpolys, bbox, norm_height = 90 ):
     stream.write('</svg>\n')
 
 def _group(component: pc.Component):
-    keyfunc = lambda subpoly: subpoly.layer
-    subpolys = sorted(
-        component.get_subpolygons(),
-        key=keyfunc
-        )
-    grouped = groupby(subpolys, keyfunc)
+    #keyfunc = lambda subpoly: subpoly.layer
+    #subpolys = sorted(
+    #    component.get_subpolygons(),
+    #    key=keyfunc
+    #    )
+    #grouped = groupby(subpolys, keyfunc)
 
-    return grouped
+    #return grouped
 
-def export_compo_as_files(
-        component: pc.Component,
-        dest: Path,
-        ):
+    grouped = {layer: [] for layer in component.layers}
+    for subpoly in component.get_subpolygons():
+        grouped[subpoly.layer].append(subpoly)
 
-    bbox = component.bbox.pad(10)
-    grouped = _group(component)
+    return grouped 
 
-    paths = []
-    for layer_name, layer_subpolys in enumerate(grouped):
-        svgpath = dest / f'layer_{i}.svg'
-        with svgpath.open('w') as file:
-            _export_layer(file, layer_subpolys, bbox)
-        paths.append(svgpath)
-
-    return paths
-
-    # TODO layer order!
+#def export_compo_as_files(
+#        component: pc.Component,
+#        dest: Path,
+#        ):
+#
+#    bbox = component.bbox.pad(10)
+#    grouped = _group(component)
+#
+#    paths = []
+#    for layer_name, layer_subpolys in enumerate(grouped):
+#        svgpath = dest / f'layer_{i}.svg'
+#        with svgpath.open('w') as file:
+#            _export_layer(file, layer_subpolys, bbox)
+#        paths.append(svgpath)
+#
+#    return paths
+#
+#    # TODO layer order!
 
 def export_compo_as_inline(
         component: pc.Component,
@@ -148,7 +154,7 @@ def export_compo_as_inline(
     grouped = _group(component)
 
     images = []
-    for layer_name, layer_subpolys in grouped:
+    for layer_name, layer_subpolys in grouped.items():
         stream = StringIO()
         _export_layer(stream, layer_subpolys, bbox)
         images.append(stream.getvalue())

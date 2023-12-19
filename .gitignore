@@ -1,31 +1,63 @@
-# Python temporary files
+# Python
 __pycache__
+__pypackages__
+.pytest_cache
 *.py[cod]
-
-# pip/stuptools/twine files
+.clirope
 *.egg-info
+venv
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# misc temporary files
+*~
+*.out
+*.log
+*.bak
+*.pid
+*.rdb
+*.old
+
+# misc output files
+*.pdf
+*.gz
 build
 dist
+*.cif
+# but allow svgs in img
+!img/*.svg
 
-# Rope (Python code refactoring tool)
-.clirope
-
-# VIM files
+# VIM
 *.sw*
 *.vim
 *.obsession*
 
-# PyClewin Output files
-/*.cif
-/*.pdf
-/*.svg
-module_browser
+# PyCharm
+.idea/
 
-# human-generated backup files
-*.bak
-*.old
+# Spyder
+.spyderproject
+.spyproject
 
-# Misc files
-*.log
+# Mac OS and Windows
+.DS_Store
+Thumbs.db
 
+# Secrets / keys
+*.pem
+*.secret
 
+# Environment variable files
+# (exclude *.env but INCLUDE *.expample.env)
+*.env
+!*.example.env

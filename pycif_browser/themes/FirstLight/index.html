@@ -68,7 +68,7 @@
 							<div class="left panel concave">
 								<div class="layerstack">
 									<div class="layer-first"></div>
-									{% for layer in compo.layers %}
+									{% for layer in compo.layers[::-1] %}
 										<div class="layer">
 											<div class="layer-inner">
 												<div class="layer-image-wrap">

@@ -9,9 +9,9 @@ class CTXOption(object):
     """
 
     name: str
-    default_value: str
-    description: str
-    shadow: bool
+    default: str
+    desc: str
+    annot: str
 
 
 @dataclass

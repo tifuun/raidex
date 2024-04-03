@@ -80,7 +80,7 @@ class Browser(object):
         instance = compo()
 
         package_name = module.__name__.split('.')[0]
-        compo_docstring = ""#split_docstring(compo.__doc__)
+        compo_docstring = pc.split_docstring(compo.__doc__)
         tags = getattr(instance, 'browser_tags', [])
 
         self.ctx_browser.all_tags.update(tags)
@@ -88,27 +88,24 @@ class Browser(object):
 
         self.ctx_browser.compos.append(CTXCompo(
             name=compo.__name__,
-            #fancy_name=compo_docstring.heading,
-            fancy_name="",
+            fancy_name=compo_docstring.heading,
             module_name=module.__name__,
             package_name=package_name,
             #author=sys.modules[module.__package__].__author__,
             author='John Doe',
-            #description=compo_docstring.description,
-            description="haha",
-            options=[],
+            description=compo_docstring.description,
             interfaces=[],
             marks=[],
             methods=[],
-            #options=[
-            #    CTXOption(
-            #        name=name,
-            #        default_value=optspec.default,
-            #        description=optspec.desc,
-            #        shadow=optspec.shadow,
-            #        )
-            #    for name, optspec in compo.optspecs.items()
-            #    ],
+            options=[
+                CTXOption(
+                    name=opt.name,
+                    default=str(opt.default),
+                    desc=opt.desc,
+                    annot=str(opt.annot),
+                    )
+                for opt in compo.Options.values()
+                ],
             layers=[
                 CTXLayer(
                     index=i,

@@ -108,6 +108,22 @@
 									<p>
 										{{compo.description}}
 									</p>
+									<table>
+										<tr>
+											<th>Option</th>
+											<th>Type</th>
+											<th>Description</th>
+											<th>Default</th>
+										</tr>
+										{% for option in compo.options %}
+											<tr>
+												<td>{{option.name |e}}</td>
+												<td>{{option.annot |e}}</td>
+												<td>{{option.desc |e}}</td>
+												<td>{{option.default |e}}</td>
+											</tr>
+										{% endfor %}
+									</table>
 								</div>
 							</div>
 						</div>

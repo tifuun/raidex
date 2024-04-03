@@ -11,7 +11,7 @@ import numpy as np
 
 import pycif as pc
 
-def _export_layer(stream, subpolys, bbox, norm_height=90):
+def _export_layer(stream, geoms, bbox, norm_height=90):
 
     scale_factor = norm_height / bbox.height
 
@@ -56,8 +56,7 @@ def _export_layer(stream, subpolys, bbox, norm_height=90):
     # Using mask allows us to dynamically recolor the hatching pattern
 
 
-    for subpoly in subpolys:
-        poly = subpoly.polygon
+    for geom in geoms:
 
         stream.write(
             '<polygon '
@@ -71,14 +70,14 @@ def _export_layer(stream, subpolys, bbox, norm_height=90):
             )
 
         try:
-            for point in poly.get_xyarray():
+            for point in geom:
                 x = point[0] * scale_factor
                 y = bbox.top - point[1] * scale_factor
                 stream.write(f'{x},{y} ')
 
         except Exception as e:
             raise Exception(
-                f'Failed to export polygon {subpoly}. ',
+                f'Failed to export geom {geom}. ',
                 ) from e
 
         stream.write('" />\n')
@@ -97,14 +96,14 @@ def _export_layer(stream, subpolys, bbox, norm_height=90):
             )
 
         try:
-            for point in poly.get_xyarray():
+            for point in geom:
                 x = point[0] * scale_factor
                 y = bbox.top - point[1] * scale_factor
                 stream.write(f'{x},{y} ')
 
         except Exception as e:
             raise Exception(
-                f'Failed to export polygon {subpoly}. ',
+                f'Failed to export geom {geom}. ',
                 ) from e
 
         stream.write('" />\n')
@@ -121,9 +120,10 @@ def _group(compo: pc.Compo):
 
     #return grouped
 
-    grouped = {layer: [] for layer in compo.layers}
-    for subpoly in compo.get_subpolygons():
-        grouped[subpoly.layer].append(subpoly)
+    grouped = {layer: [] for layer in compo.Layers.keys()}
+    for layer_name, layer in compo.get_geoms().items():
+        for geom in layer:
+            grouped[layer_name].append(geom)
 
     return grouped 
 
@@ -147,7 +147,7 @@ def _group(compo: pc.Compo):
 #    # TODO layer order!
 
 def export_compo_as_inline(
-        compo: pc.compo,
+        compo: pc.Compo,
         ):
 
     bbox = compo.bbox.pad(10)

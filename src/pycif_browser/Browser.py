@@ -179,7 +179,7 @@ class Browser(object):
         """
         Generate preview images for compo
         """
-        return [""] * len(compo.Layers)  # TODO
+        #return [""] * len(compo.Layers)  # TODO
         instance = compo()
 
 

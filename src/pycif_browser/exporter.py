@@ -120,8 +120,11 @@ def _group(compo: pc.Compo):
 
     #return grouped
 
-    grouped = {layer: [] for layer in compo.Layers.keys()}
+    #grouped = {layer: [] for layer in compo.Layers.keys()}
+    grouped = {}
     for layer_name, layer in compo.get_geoms().items():
+        if layer_name not in grouped.keys():
+            grouped[layer_name] = []
         for geom in layer:
             grouped[layer_name].append(geom)
 

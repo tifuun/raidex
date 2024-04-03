@@ -77,7 +77,11 @@ class Browser(object):
         """
         entry = self.compos[compo]
         module = inspect.getmodule(compo)
-        instance = compo()
+        instance = compo(**{
+            option.name: option.browser_default
+            for option in compo.Options.values()
+            if option.browser_default is not pc.Empty
+            })
 
         package_name = module.__name__.split('.')[0]
         compo_docstring = pc.split_docstring(compo.__doc__)
@@ -88,7 +92,7 @@ class Browser(object):
 
         self.ctx_browser.compos.append(CTXCompo(
             name=compo.__name__,
-            fancy_name=compo_docstring.heading,
+            fancy_name=compo_docstring.heading or compo.__name__,
             module_name=module.__name__,
             package_name=package_name,
             #author=sys.modules[module.__package__].__author__,
@@ -109,18 +113,16 @@ class Browser(object):
             layers=[
                 CTXLayer(
                     index=i,
-                    name=name,
+                    name=(
+                        instance.Layers[i]
+                        if i in instance.Layers.keys()
+                        else ""
+                        ),
                     image_string=image_string,
                     )
-                for i, (name, image_string)
-                in enumerate(
-                    zip(
-                        instance.Layers.keys(),
-                        entry.layer_image_strings,
-                        strict=True,
-                        )
-                    )
-                ],  # TODO
+                for i, image_string
+                in enumerate(entry.layer_image_strings)
+                ],  # TODO everything is broken
             #interfaces=[
             #    CTXInterface(
             #        name=interface.__name__,
@@ -176,9 +178,13 @@ class Browser(object):
         """
         Generate preview images for compo
         """
-        #return [""] * len(compo.Layers)  # TODO
-        instance = compo()
 
+        # TODO this is copy-pasted
+        instance = compo(**{
+            option.name: option.browser_default
+            for option in compo.Options.values()
+            if option.browser_default is not pc.Empty
+            })
 
         compo_path = path / 'compos' / compo.__name__
         compo_path.mkdir(parents=True)

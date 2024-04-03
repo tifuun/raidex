@@ -14,10 +14,9 @@ from io import StringIO
 
 import jinja2
 
-from pycif.draw.Component import Component
+import pycif as pc
 
 from pycif_browser.themes import FirstLight
-from pycif.helpers.docparse import split_docstring
 
 from pycif_browser.exporter import export_compo_as_inline
 from pycif_browser.contexts import (
@@ -27,18 +26,18 @@ from pycif_browser.contexts import (
     CTXInterface,
     CTXMark,
     CTXMethod,
-    CTXComponent
+    CTXCompo
     )
 
 @dataclass
-class ComponentEntry(object):
+class compoEntry(object):
     """
-    Entry for a component in the modulebrowser database.
+    Entry for a compo in the modulebrowser database.
     """
 
-    interfaces: List[Component] = field(
-        default_factory=lambda: [],
-        )
+    #interfaces: List[compo] = field(
+    #    default_factory=lambda: [],
+    #    )
 
     layer_image_strings: Dict[str, str] = field(
         default_factory=lambda: {}
@@ -46,15 +45,15 @@ class ComponentEntry(object):
 
 class Browser(object):
     def __init__(self):
-        self.components = {}
+        self.compos = {}
         self.ctx_browser = CTXBrowser()
 
-    def register_component(self, new_compo):
+    def register_compo(self, new_compo):
         """
-        Add new component to database
+        Add new compo to database
         """
-        new_entry = ComponentEntry()
-        #for existing_compo, existing_entry in self.components.items():
+        new_entry = compoEntry()
+        #for existing_compo, existing_entry in self.compos.items():
 
             #if existing_compo.is_interface(new_compo):
             #    new_entry.interfaces.append(existing_compo)
@@ -62,39 +61,41 @@ class Browser(object):
             #elif new_compo.is_interface(existing_compo):
             #    existing_entry.interfaces.append(new_compo)
 
-        self.components[new_compo] = new_entry
+        self.compos[new_compo] = new_entry
 
-    def register_package(self, package):
-        """
-        Add new package into database
-        """
-        # TODO if not defined, export all components and throw warning.
-        for compo in package.PC_EXPORT_COMPONENTS:
-            self.register_component(compo)
+    #def register_package(self, package):
+    #    """
+    #    Add new package into database
+    #    """
+    #    # TODO if not defined, export all compos and throw warning.
+    #    for compo in package.PC_EXPORT_compoS:
+    #        self.register_compo(compo)
 
-    def _generate_component_context(self, compo):
+    def _generate_compo_context(self, compo):
         """
-        Generate jinja2 context for one component
+        Generate jinja2 context for one compo
         """
-        entry = self.components[compo]
+        entry = self.compos[compo]
         module = inspect.getmodule(compo)
         instance = compo()
 
         package_name = module.__name__.split('.')[0]
-        compo_docstring = split_docstring(compo.__doc__)
+        compo_docstring = ""#split_docstring(compo.__doc__)
         tags = getattr(instance, 'browser_tags', [])
 
         self.ctx_browser.all_tags.update(tags)
         self.ctx_browser.all_packages.add(package_name)
 
-        self.ctx_browser.components.append(CTXComponent(
+        self.ctx_browser.compos.append(CTXCompo(
             name=compo.__name__,
-            fancy_name=compo_docstring.heading,
+            #fancy_name=compo_docstring.heading,
+            fancy_name="",
             module_name=module.__name__,
             package_name=package_name,
             #author=sys.modules[module.__package__].__author__,
             author='John Doe',
-            description=compo_docstring.description,
+            #description=compo_docstring.description,
+            description="haha",
             options=[],
             interfaces=[],
             marks=[],
@@ -117,7 +118,7 @@ class Browser(object):
                 for i, (name, image_string)
                 in enumerate(
                     zip(
-                        instance.layers,
+                        instance.Layers.keys(),
                         entry.layer_image_strings,
                         strict=True,
                         )
@@ -147,19 +148,17 @@ class Browser(object):
             tags=tags,
             ))
 
-        print(instance.layers)
-
     def _generate_context(self):
         """
         Generate jinja2 context from database
         """
-        for compo in self.components.keys():
-            self._generate_component_context(compo)
+        for compo in self.compos.keys():
+            self._generate_compo_context(compo)
         return self.ctx_browser.__dict__
         #return {
-        #    'components': [
-        #        self._generate_component_context(compo)
-        #        for compo in self.components.keys()
+        #    'compos': [
+        #        self._generate_compo_context(compo)
+        #        for compo in self.compos.keys()
         #        ],
         #    }
 
@@ -178,12 +177,13 @@ class Browser(object):
 
     def _generate_preview_image(self, path: Path, compo):
         """
-        Generate preview images for component
+        Generate preview images for compo
         """
+        return [""] * len(compo.Layers)  # TODO
         instance = compo()
 
 
-        compo_path = path / 'components' / compo.__name__
+        compo_path = path / 'compos' / compo.__name__
         compo_path.mkdir(parents=True)
 
         layer_image_strings = export_compo_as_inline(instance)
@@ -195,7 +195,7 @@ class Browser(object):
 
     def _generate_inline_preview_image(self, instance):
         """
-        Generate preview images for component
+        Generate preview images for compo
         """
 
         io = StringIO()
@@ -207,10 +207,10 @@ class Browser(object):
 
     def _generate_preview_images(self, path: Path):
         """
-        Generate preview images for all components in database
+        Generate preview images for all compos in database
         """
-        (path / 'components').mkdir()
-        for compo, entry in self.components.items():
+        (path / 'compos').mkdir()
+        for compo, entry in self.compos.items():
             layer_image_strings = self._generate_preview_image(path, compo)
             entry.layer_image_strings = layer_image_strings
 

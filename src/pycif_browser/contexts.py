@@ -28,7 +28,7 @@ class CTXLayer(object):
 @dataclass
 class CTXInterface(object):
     """
-    jinja2 context for a component interface.
+    jinja2 context for a compo interface.
     """
 
     name: str
@@ -55,9 +55,9 @@ class CTXMethod(object):
 
 
 @dataclass
-class CTXComponent(object):
+class CTXCompo(object):
     """
-    jinja2 context for a component.
+    jinja2 context for a compo.
     """
 
     name: str
@@ -87,7 +87,7 @@ class CTXBrowser(object):
         default_factory=lambda: set(),
         )
 
-    components: List[CTXComponent] = field(
+    compos: List[CTXCompo] = field(
         default_factory=lambda: [],
         )
 

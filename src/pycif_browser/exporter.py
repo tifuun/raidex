@@ -111,29 +111,29 @@ def _export_layer(stream, subpolys, bbox, norm_height=90):
 
     stream.write('</svg>\n')
 
-def _group(component: pc.Component):
+def _group(compo: pc.Compo):
     #keyfunc = lambda subpoly: subpoly.layer
     #subpolys = sorted(
-    #    component.get_subpolygons(),
+    #    compo.get_subpolygons(),
     #    key=keyfunc
     #    )
     #grouped = groupby(subpolys, keyfunc)
 
     #return grouped
 
-    grouped = {layer: [] for layer in component.layers}
-    for subpoly in component.get_subpolygons():
+    grouped = {layer: [] for layer in compo.layers}
+    for subpoly in compo.get_subpolygons():
         grouped[subpoly.layer].append(subpoly)
 
     return grouped 
 
 #def export_compo_as_files(
-#        component: pc.Component,
+#        compo: pc.compo,
 #        dest: Path,
 #        ):
 #
-#    bbox = component.bbox.pad(10)
-#    grouped = _group(component)
+#    bbox = compo.bbox.pad(10)
+#    grouped = _group(compo)
 #
 #    paths = []
 #    for layer_name, layer_subpolys in enumerate(grouped):
@@ -147,11 +147,11 @@ def _group(component: pc.Component):
 #    # TODO layer order!
 
 def export_compo_as_inline(
-        component: pc.Component,
+        compo: pc.compo,
         ):
 
-    bbox = component.bbox.pad(10)
-    grouped = _group(component)
+    bbox = compo.bbox.pad(10)
+    grouped = _group(compo)
 
     images = []
     for layer_name, layer_subpolys in grouped.items():

@@ -5,7 +5,7 @@ cli.py: Command-line interface to pycif package browser.
 import argparse
 from pathlib import Path
 
-from pycif.helpers.import_from_string import import_package_from_string
+import pycif as pc
 
 ACTION_BUILD = 'build'
 ACTION_OPEN = 'open'
@@ -30,8 +30,8 @@ def cli():
         from pycif_browser.Browser import Browser
         browser = Browser()
 
-        for package in args.packages:
-            browser.register_package(package)
+        for compo in pc.flatten(args.packages):
+            browser.register_compo(compo)
 
         browser.generate_html(args.browser_dir)
 
@@ -55,7 +55,7 @@ def _add_build_action(subparsers):
         'packages',
         nargs='+',
         help='List of packages to include',
-        type=import_package_from_string,
+        type=lambda string: pc.string_import(string, multiple=True),
         )
 
     parser_build.add_argument(

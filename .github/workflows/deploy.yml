@@ -1,0 +1,59 @@
+name: Deploy Github Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    # runs-on: alpine-latest
+    runs-on: self-hosted
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+
+#      - name: get graphviz and python
+#        run: |
+#          xbps-install -Syu
+#          xbps-install -Syu graphviz python3
+#
+
+      - name: create venv
+        run: |
+          python -m venv venv
+
+      - name: install raidex
+        run: |
+          source venv/bin/activate
+          python -m pip install -e .
+
+      - name: install raimad
+        run: |
+          source venv/bin/activate
+          python -m pip install raimad
+
+      - name: build raidex
+        run: |
+          source venv/bin/activate
+          python -m raidex build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+  deploy:
+    #runs-on: alpine-latest
+    runs-on: self-hosted
+
+    permissions:
+      pages: write
+      id-token: write
+
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

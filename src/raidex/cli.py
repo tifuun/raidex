@@ -73,7 +73,6 @@ def _add_build_action(subparsers):
         default='./build',
         )
 
-
 def _add_open_action(subparsers):
     """Setup parsers for 'open' action."""
     parser_open = subparsers.add_parser(

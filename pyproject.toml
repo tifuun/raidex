@@ -9,7 +9,7 @@ description = "RAIMAD Package Index"
 authors = [
 	{name = "maybetree", email = "maybetree48@proton.me"}
 	]
-license = { text = "I haven't decided yet" }
+license = { file = "LICENSE.md" }
 readme = "README.md"
 classifiers = [
 	'Programming Language :: Python :: 3',

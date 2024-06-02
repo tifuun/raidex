@@ -9,7 +9,7 @@ from itertools import groupby
 
 import numpy as np
 
-import pycif as pc
+import raimad as rai
 
 def _export_layer(stream, geoms, bbox, norm_height=90):
 
@@ -110,7 +110,7 @@ def _export_layer(stream, geoms, bbox, norm_height=90):
 
     stream.write('</svg>\n')
 
-def _group(compo: pc.Compo):
+def _group(compo: rai.typing.Compo):
     #keyfunc = lambda subpoly: subpoly.layer
     #subpolys = sorted(
     #    compo.get_subpolygons(),
@@ -122,7 +122,7 @@ def _group(compo: pc.Compo):
 
     #grouped = {layer: [] for layer in compo.Layers.keys()}
     grouped = {}
-    for layer_name, layer in compo.get_geoms().items():
+    for layer_name, layer in compo.steamroll().items():
         if layer_name not in grouped.keys():
             grouped[layer_name] = []
         for geom in layer:
@@ -150,7 +150,7 @@ def _group(compo: pc.Compo):
 #    # TODO layer order!
 
 def export_compo_as_inline(
-        compo: pc.Compo,
+        compo: rai.typing.Compo,
         ):
 
     bbox = compo.bbox.pad(10)

@@ -14,12 +14,12 @@ from io import StringIO
 
 import jinja2
 
-import pycif as pc
+import raimad as rai
 
-from pycif_browser.themes import FirstLight
+from raidex.themes import FirstLight
 
-from pycif_browser.exporter import export_compo_as_inline
-from pycif_browser.contexts import (
+from raidex.exporter import export_compo_as_inline
+from raidex.contexts import (
     CTXBrowser,
     CTXOption,
     CTXLayer,
@@ -80,11 +80,11 @@ class Browser(object):
         instance = compo(**{
             option.name: option.browser_default
             for option in compo.Options.values()
-            if option.browser_default is not pc.Empty
+            if option.browser_default is not rai.Empty
             })
 
         package_name = module.__name__.split('.')[0]
-        compo_docstring = pc.split_docstring(compo.__doc__)
+        compo_docstring = rai.split_docstring(compo.__doc__)
         tags = getattr(instance, 'browser_tags', [])
 
         self.ctx_browser.all_tags.update(tags)
@@ -183,7 +183,7 @@ class Browser(object):
         instance = compo(**{
             option.name: option.browser_default
             for option in compo.Options.values()
-            if option.browser_default is not pc.Empty
+            if option.browser_default is not rai.Empty
             })
 
         compo_path = path / 'compos' / compo.__name__

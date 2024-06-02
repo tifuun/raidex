@@ -1,14 +1,13 @@
 """
-cli.py: Command-line interface to pycif package browser.
+cli.py: Command-line interface to raidex.
 """
 
 import argparse
 from pathlib import Path
 
-import pycif as pc
-
 ACTION_BUILD = 'build'
 ACTION_OPEN = 'open'
+
 
 def cli():
     parser = argparse.ArgumentParser(
@@ -27,10 +26,17 @@ def cli():
     args = parser.parse_args()
 
     if args.action == ACTION_BUILD:
-        from pycif_browser.Browser import Browser
+        from raidex.Browser import Browser
+        import raimad as rai
+
         browser = Browser()
 
-        for compo in pc.flatten(args.packages):
+        for compo in rai.flatten(
+                map(
+                    lambda s: rai.string_import(s, multiple=True),
+                    args.packages
+                    )
+                ):
             browser.register_compo(compo)
 
         browser.generate_html(args.browser_dir)
@@ -45,6 +51,7 @@ def cli():
         # argparse validates this.
         parser.error('Unknown action')
 
+
 def _add_build_action(subparsers):
     """Setup parsers for 'build' action."""
     parser_build = subparsers.add_parser(
@@ -55,7 +62,7 @@ def _add_build_action(subparsers):
         'packages',
         nargs='+',
         help='List of packages to include',
-        type=lambda string: pc.string_import(string, multiple=True),
+        #type=lambda string: pc.string_import(string, multiple=True),
         )
 
     parser_build.add_argument(
@@ -65,6 +72,7 @@ def _add_build_action(subparsers):
         help='Output directory',
         default='./build',
         )
+
 
 def _add_open_action(subparsers):
     """Setup parsers for 'open' action."""

@@ -14,9 +14,17 @@ jobs:
 
       - name: get graphviz and python
         run: |
-          sudo apt update && \
-          sudo apt upgrade && \
-          sudo apt install python3 graphviz
+          sudo apt install python3.12 graphviz
+        # do NOT run apt update && apt upgrade here!
+        # Micros*ft, in their infinite wisdom, decided
+        # to include "other tools" in the virtual machine,
+        # so unless you want to wait for the crappy azure VM
+        # to update vim, dotnet, aspnet, the kernel, snap,
+        # firefox, and half the X11 stack
+        # every time you push to main,
+        # do NOT do apt update && apt update
+        #
+        # And y'all thought docker was bloat lol
 
       - name: create venv
         run: |

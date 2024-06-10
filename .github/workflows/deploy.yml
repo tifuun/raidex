@@ -12,9 +12,14 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v2
 
-      - name: get graphviz and python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: get graphviz
         run: |
-          sudo apt install python3.12 graphviz
+          sudo apt install graphviz
         # do NOT run apt update && apt upgrade here!
         # Micros*ft, in their infinite wisdom, decided
         # to include "other tools" in the virtual machine,

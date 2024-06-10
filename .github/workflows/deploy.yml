@@ -7,17 +7,16 @@ on:
 
 jobs:
   build:
-    # runs-on: alpine-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: checkout repo
         uses: actions/checkout@v2
 
-#      - name: get graphviz and python
-#        run: |
-#          xbps-install -Syu
-#          xbps-install -Syu graphviz python3
-#
+      - name: get graphviz and python
+        run: |
+          apt update && \
+          apt upgrade && \
+          apt install python3 graphviz
 
       - name: create venv
         run: |
@@ -45,8 +44,7 @@ jobs:
           path: ./build
 
   deploy:
-    #runs-on: alpine-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     permissions:
       pages: write

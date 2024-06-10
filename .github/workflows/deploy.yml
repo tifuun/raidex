@@ -14,9 +14,9 @@ jobs:
 
       - name: get graphviz and python
         run: |
-          apt update && \
-          apt upgrade && \
-          apt install python3 graphviz
+          sudo apt update && \
+          sudo apt upgrade && \
+          sudo apt install python3 graphviz
 
       - name: create venv
         run: |

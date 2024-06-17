@@ -32,6 +32,8 @@ jobs:
           python -m pip install raimad
 
       - name: install rai_smiley
+        env:
+          RAIDEX_PRIVATE_KEY: ${{ secrets.RAIDEX_PRIVATE_KEY }}
         run: |
           GIT_SSH_COMMAND=$(realpath deploy/ssh-with-env-key.sh) \
             pip install \

@@ -9,7 +9,9 @@
 # using github secrets to allow raidex to clone private
 # repos.
 
+echo "-here--------"
 echo "$RAIDEX_PRIVATE_KEY" | head -c 50
+echo "-here--------"
 
 TEMP_SSH_KEY_FILE=$(mktemp)
 echo "$RAIDEX_PRIVATE_KEY" > $TEMP_SSH_KEY_FILE

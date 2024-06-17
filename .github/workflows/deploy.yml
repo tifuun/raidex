@@ -33,9 +33,9 @@ jobs:
 
       - name: install rai_smiley
         run: |
-          GIT_SSH_COMMAND=deploy/ssh-with-env-key.sh \
-            pip install -e \
-            git+ssh://git@github.com:tifuun/rai_smiley.git
+          GIT_SSH_COMMAND=$(realpath deploy/ssh-with-env-key.sh) \
+            pip install \
+            git+ssh://git@github.com/tifuun/rai_smiley.git
 
       - name: build raidex
         run: |

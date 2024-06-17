@@ -35,6 +35,7 @@ jobs:
         env:
           RAIDEX_PRIVATE_KEY: ${{ secrets.RAIDEX_PRIVATE_KEY }}
         run: |
+          source venv/bin/activate
           GIT_SSH_COMMAND=$(realpath deploy/ssh-with-env-key.sh) \
             pip install \
             git+ssh://git@github.com/tifuun/rai_smiley.git

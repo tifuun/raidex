@@ -31,6 +31,12 @@ jobs:
           source venv/bin/activate
           python -m pip install raimad
 
+      - name: install rai_smiley
+        run: |
+          GIT_SSH_COMMAND=deploy/ssh-with-env-key.sh \
+            pip install -e \
+            git+ssh://git@github.com:tifuun/rai_smiley.git
+
       - name: build raidex
         run: |
           source venv/bin/activate

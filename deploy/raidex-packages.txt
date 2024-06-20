@@ -1,0 +1,5 @@
+# List of all raidex packages,
+# in Python's `requirements.txt` format.
+
+git+ssh://git@github.com/tifuun/rai_smiley.git
+

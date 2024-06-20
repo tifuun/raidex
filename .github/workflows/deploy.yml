@@ -38,7 +38,11 @@ jobs:
           source venv/bin/activate
           GIT_SSH_COMMAND=$(realpath deploy/ssh-with-env-key.sh) \
             pip install \
-            git+ssh://git@github.com/tifuun/rai_smiley.git
+            `=== ADD PACKAGES HERE ===` \
+            \
+            git+ssh://git@github.com/tifuun/rai_smiley.git \
+            \
+            `=== ADD PACKAGES HERE ===` \
 
       - name: build raidex
         run: |

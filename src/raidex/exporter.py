@@ -13,7 +13,7 @@ import raimad as rai
 
 def _export_layer(stream, geoms, bbox, norm_height=90):
 
-    scale_factor = norm_height / bbox.height
+    scale_factor = norm_height / bbox.width
 
     bbox = bbox.copy()
     bbox.max_x *= scale_factor
@@ -27,7 +27,7 @@ def _export_layer(stream, geoms, bbox, norm_height=90):
         #f'width="{bbox.width}" '
         #f'height="{bbox.height}" '
         'class="layer-image" '
-        f'viewBox="{bbox.left} 0 {bbox.width} {bbox.height}"'
+        f'viewBox="{bbox.left} 0 {bbox.length} {bbox.width}"'
         '>\n'
         )
 

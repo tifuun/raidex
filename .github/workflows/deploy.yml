@@ -44,7 +44,7 @@ jobs:
           source venv/bin/activate
           python -m raidex build \
             raimad \
-            rai_smiley
+            $(pip list --format=freeze | sed 's/==.*//' | grep '^rai_')
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

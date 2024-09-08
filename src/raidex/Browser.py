@@ -3,7 +3,7 @@ Module browser.
 
 makes it easy to look through existing modules
 """
-from typing import List, Dict
+from typing import Dict
 from importlib.resources import read_text
 from importlib.resources import files as package_files
 import inspect
@@ -23,9 +23,6 @@ from raidex.contexts import (
     CTXBrowser,
     CTXOption,
     CTXLayer,
-    CTXInterface,
-    CTXMark,
-    CTXMethod,
     CTXCompo
     )
 

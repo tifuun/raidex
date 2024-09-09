@@ -81,7 +81,7 @@ class Browser(object):
             })
 
         package_name = module.__name__.split('.')[0]
-        compo_docstring = rai.split_docstring(compo.__doc__)
+        #compo_docstring = rai.split_docstring(compo.__doc__)
         tags = getattr(instance, 'browser_tags', [])
 
         self.ctx_browser.all_tags.update(tags)
@@ -89,12 +89,14 @@ class Browser(object):
 
         self.ctx_browser.compos.append(CTXCompo(
             name=compo.__name__,
-            fancy_name=compo_docstring.heading or compo.__name__,
+            #fancy_name=compo_docstring.heading or compo.__name__,
+            fancy_name=compo.__name__,
             module_name=module.__name__,
             package_name=package_name,
             #author=sys.modules[module.__package__].__author__,
             author='John Doe',
-            description=compo_docstring.description,
+            #description=compo_docstring.description,
+            description=compo.__doc__,
             interfaces=[],
             marks=[],
             methods=[],
